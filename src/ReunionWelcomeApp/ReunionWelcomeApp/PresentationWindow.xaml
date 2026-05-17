@@ -9,17 +9,10 @@
     <Grid>
         <!-- Semi-transparent overlay for better name visibility -->
         <Grid.Background>
-            <SolidColorBrush Color="White" Opacity="0.15"/>
+            <SolidColorBrush Color="#EEEDF2"/>
         </Grid.Background>
 
-        <!-- Background Image centered with preserved proportions -->
-        <Image x:Name="BackgroundImage" 
-               Source="Resources/Images/Impsat-FondoBlanco.jpg"
-               Stretch="Uniform"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center"/>
-
-        <!-- Logo at top center (more visible) -->
+        <!-- Logo at top center -->
         <Image x:Name="LogoImage" 
                Source="Resources/Images/Impsat-FondoBlanco.jpg" 
                HorizontalAlignment="Center" 
@@ -64,11 +57,11 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Asistentes: " 
                            FontSize="24" 
-                           Foreground="#AAAAAA"
+                           Foreground="{Binding CounterColorBrush}"
                            FontFamily="Segoe UI"/>
                 <TextBlock Text="{Binding AttendeeCount}" 
                            FontSize="24" 
-                           Foreground="White" 
+                           Foreground="{Binding CounterColorBrush}" 
                            FontWeight="Bold"
                            FontFamily="Segoe UI"/>
             </StackPanel>

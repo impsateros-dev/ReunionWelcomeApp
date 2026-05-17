@@ -33,7 +33,20 @@ public partial class App : System.Windows.Application
             args.SetObserved();
         };
 
+        var config = ConfigService.GetConfig();
+        AudioService.SetVolume(config.Sounds.Volume);
+        AudioService.SetAmbientVolume(config.Sounds.AmbientVolume);
+        AudioService.StartAmbient();
+
         LoggingService.Log("Application started with global exception handlers");
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        AudioService.StopAmbient();
+        AudioService.ForceCleanup();
+        LoggingService.Log("Application exiting, cleanup performed");
+        base.OnExit(e);
     }
 }
 

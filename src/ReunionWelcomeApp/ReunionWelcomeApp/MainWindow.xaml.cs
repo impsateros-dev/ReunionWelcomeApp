@@ -21,8 +21,6 @@ public partial class MainWindow : Window
 
         _viewModel.NameSubmitted += OnNameSubmitted;
 
-        LoadResources();
-
         KeyDown += OnKeyDown;
         Loaded += OnLoaded;
 
@@ -44,23 +42,6 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             LoggingService.LogError("Failed to load existing attendees", ex);
-        }
-    }
-
-    private void LoadResources()
-    {
-        try
-        {
-            var config = ConfigService.GetConfig();
-            var logoPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                config.Images.LogoBlue);
-            if (System.IO.File.Exists(logoPath))
-                LogoImage.Source = new System.Windows.Media.Imaging.BitmapImage(
-                    new Uri(logoPath));
-        }
-        catch (Exception ex)
-        {
-            LoggingService.LogError("Failed to load logo", ex);
         }
     }
 
@@ -141,10 +122,6 @@ private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
             {
                 Dispatcher.BeginInvoke(new Action(() => NameInput.Focus()));
             }
-        }
-        else if (e.Key == Key.Escape)
-        {
-            _viewModel.EscapePressedCommand.Execute(null);
         }
         else if (e.Key == Key.F1)
             ShowDebug();

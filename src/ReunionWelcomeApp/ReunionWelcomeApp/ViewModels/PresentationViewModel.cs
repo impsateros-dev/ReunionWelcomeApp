@@ -13,10 +13,11 @@ namespace ReunionWelcomeApp.ViewModels;
 
 public class NameItem : INotifyPropertyChanged
 {
-    private double _x, _y, _size;
+    private double _x, _y, _size, _strokeWidth;
     private string _name = string.Empty;
     private bool _isHighlight;
     private SolidColorBrush _colorBrush = new(Colors.Black);
+    private SolidColorBrush _strokeBrush = new(Colors.White);
 
     public double X { get => _x; set { _x = value; OnPropertyChanged(); } }
     public double Y { get => _y; set { _y = value; OnPropertyChanged(); } }
@@ -24,6 +25,8 @@ public class NameItem : INotifyPropertyChanged
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public bool IsHighlight { get => _isHighlight; set { _isHighlight = value; OnPropertyChanged(); } }
     public SolidColorBrush ColorBrush { get => _colorBrush; set { _colorBrush = value; OnPropertyChanged(); } }
+    public SolidColorBrush StrokeBrush { get => _strokeBrush; set { _strokeBrush = value; OnPropertyChanged(); } }
+    public double StrokeWidth { get => _strokeWidth; set { _strokeWidth = value; OnPropertyChanged(); } }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? name = null)
@@ -39,6 +42,7 @@ public class PresentationViewModel : INotifyPropertyChanged
     private bool _isDebugVisible;
     private double _windowWidth = 1920;
     private double _windowHeight = 1080;
+    private SolidColorBrush _counterColorBrush = new(System.Windows.Media.Colors.Black);
     private readonly Random _random = new();
     private readonly List<Attendee> _allAttendees = new();
     private readonly DispatcherTimer _displayTimer;
@@ -46,6 +50,14 @@ public class PresentationViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public event Action<NameItem>? NameAdded;
+    public event Action<NameItem>? NameRemoved;
+    public event Action? NamesRepositionRequested;
+
+    public SolidColorBrush CounterColorBrush
+    {
+        get => _counterColorBrush;
+        set { _counterColorBrush = value; OnPropertyChanged(); }
+    }
 
     public ObservableCollection<NameItem> NameCloud { get; } = new();
 
@@ -83,6 +95,9 @@ public class PresentationViewModel : INotifyPropertyChanged
     {
         var config = ConfigService.GetConfig();
 
+        var counterColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(config.NameCloud.CounterColor);
+        _counterColorBrush = new SolidColorBrush(counterColor);
+
         _displayTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromMilliseconds(config.Animations.NameDisplayDuration)
@@ -105,7 +120,7 @@ public class PresentationViewModel : INotifyPropertyChanged
         _allAttendees.Add(attendee);
         AttendeeCount = _allAttendees.Count;
 
-        ExcelExportService.SaveAttendees(_allAttendees);
+        System.Threading.Tasks.Task.Run(() => ExcelExportService.SaveAttendees(_allAttendees));
         LoggingService.Log($"Name added to cloud: {name}");
 
         ShowNewName(name);
@@ -173,6 +188,7 @@ public class PresentationViewModel : INotifyPropertyChanged
             item.Y = Math.Max(20, Math.Min(newHeight - 50, relY * newHeight));
         }
         
+        NamesRepositionRequested?.Invoke();
         LoggingService.Log($"Repositioned {NameCloud.Count} names to {newWidth}x{newHeight}");
     }
 
@@ -190,32 +206,118 @@ public class PresentationViewModel : INotifyPropertyChanged
     System.Windows.Media.Color.FromRgb(128, 0, 0),     // Maroon
 };
 
+    private bool CheckOverlap(double x, double y, double size, double minDistance = 60)
+    {
+        foreach (var existing in NameCloud)
+        {
+            var dx = x - existing.X;
+            var dy = y - existing.Y;
+            var dist = Math.Sqrt(dx * dx + dy * dy);
+            if (dist < minDistance)
+                return true;
+        }
+        return false;
+    }
+
+    private void ReduceAllSizes(double factor = 0.85)
+    {
+        var config = ConfigService.GetConfig();
+        foreach (var item in NameCloud)
+        {
+            var newSize = Math.Max(config.NameCloud.NameMinSize, item.Size * factor);
+            item.Size = newSize;
+        }
+        NamesRepositionRequested?.Invoke();
+    }
+
     private void AddToCloud(string name)
     {
         var config = ConfigService.GetConfig();
 
-        var paddingX = _windowWidth * 0.15f;
+        var paddingX = _windowWidth * 0.10f;
         var paddingY = _windowHeight * 0.15f;
         var usableWidth = _windowWidth - paddingX * 2;
         var usableHeight = _windowHeight - paddingY * 2;
 
-        var colorIndex = _random.Next(NameColors.Length);
-        var color = NameColors[colorIndex];
+        var centerX = _windowWidth / 2;
+        var centerY = _windowHeight / 2;
+        var exclusionRadius = _windowWidth * (config.NameCloud.ExclusionRadiusPercent / 100.0);
+
+        double x, y;
+        int attempts = 0;
+        int maxAttempts = 100;
+        bool placed = false;
+
+        do
+        {
+            x = paddingX + _random.NextDouble() * usableWidth;
+            y = paddingY + _random.NextDouble() * usableHeight;
+
+            var distFromCenter = Math.Sqrt((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY));
+            if (distFromCenter >= exclusionRadius && !CheckOverlap(x, y, 24))
+            {
+                placed = true;
+                break;
+            }
+            attempts++;
+        } while (attempts < maxAttempts);
+
+        if (!placed && NameCloud.Count > 0)
+        {
+            ReduceAllSizes(0.85);
+            attempts = 0;
+            do
+            {
+                x = paddingX + _random.NextDouble() * usableWidth;
+                y = paddingY + _random.NextDouble() * usableHeight;
+
+                var distFromCenter = Math.Sqrt((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY));
+                if (distFromCenter >= exclusionRadius && !CheckOverlap(x, y, 20))
+                {
+                    placed = true;
+                    break;
+                }
+                attempts++;
+            } while (attempts < maxAttempts);
+        }
+
+        if (!placed)
+        {
+            x = paddingX + _random.NextDouble() * usableWidth;
+            y = paddingY + _random.NextDouble() * usableHeight;
+        }
+
+        var color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(config.NameCloud.NameColor);
+        var strokeColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(config.NameCloud.NameStrokeColor);
 
         var item = new NameItem
         {
             Name = name,
-            X = paddingX + _random.NextDouble() * usableWidth,
-            Y = paddingY + _random.NextDouble() * usableHeight,
-            Size = 18 + _random.NextDouble() * 20,
-            ColorBrush = new SolidColorBrush(color)
+            X = x,
+            Y = y,
+            Size = config.NameCloud.NameMinSize + _random.NextDouble() * (config.NameCloud.NameMaxSize - config.NameCloud.NameMinSize),
+            ColorBrush = new SolidColorBrush(color),
+            StrokeBrush = new SolidColorBrush(strokeColor),
+            StrokeWidth = config.NameCloud.NameStrokeWidth
         };
 
         NameCloud.Add(item);
         NameAdded?.Invoke(item);
 
+        AudioService.PlayNameAppear();
+
+        if (AttendeeCount % config.NameCloud.SpecialHighlightEvery == 0)
+        {
+            AudioService.PlayNameHighlight();
+            TriggerHighlight();
+        }
+
         while (NameCloud.Count > config.NameCloud.MaxNamesVisible)
+        {
+            var removed = NameCloud[0];
+            NameRemoved?.Invoke(removed);
             NameCloud.RemoveAt(0);
+        }
     }
 
     private void TriggerHighlight()

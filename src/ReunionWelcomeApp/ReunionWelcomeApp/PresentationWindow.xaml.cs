@@ -21,6 +21,8 @@ public partial class PresentationWindow : Window
         DataContext = ViewModel;
 
         ViewModel.NameAdded += OnNameItemAdded;
+        ViewModel.NameRemoved += OnNameItemRemoved;
+        ViewModel.NamesRepositionRequested += OnNamesRepositionRequested;
         
         try
         {
@@ -37,21 +39,6 @@ public partial class PresentationWindow : Window
             catch (Exception ex)
             {
                 LoggingService.LogError("Failed to load logo", ex);
-            }
-
-            try
-            {
-                var bgPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                    "Resources/Images/Impsat-FondoBlanco.jpg");
-                if (System.IO.File.Exists(bgPath))
-                {
-                    var bgImage = new System.Windows.Media.Imaging.BitmapImage(new Uri(bgPath));
-                    BackgroundImage.Source = bgImage;
-                }
-            }
-            catch (Exception ex)
-            {
-                LoggingService.LogError("Failed to load background image", ex);
             }
         }
         catch (Exception ex)
@@ -93,7 +80,10 @@ public partial class PresentationWindow : Window
         try
         {
             if (ActualWidth > 0 && ActualHeight > 0)
+            {
                 ViewModel?.RepositionNames(ActualWidth, ActualHeight);
+                UpdateCanvasPositions();
+            }
         }
         catch (Exception ex)
         {
@@ -101,11 +91,34 @@ public partial class PresentationWindow : Window
         }
     }
 
+    private void OnNamesRepositionRequested()
+    {
+        try
+        {
+            Dispatcher.BeginInvoke(UpdateCanvasPositions);
+        }
+        catch (Exception ex)
+        {
+            LoggingService.LogError("OnNamesRepositionRequested error", ex);
+        }
+    }
+
+    private void UpdateCanvasPositions()
+    {
+        foreach (var kvp in _nameElements)
+        {
+            var item = kvp.Key;
+            var textBlock = kvp.Value;
+            Canvas.SetLeft(textBlock, item.X);
+            Canvas.SetTop(textBlock, item.Y);
+        }
+    }
+
     public void ReceiveName(string name)
     {
         try
         {
-            Dispatcher.Invoke(() => ViewModel?.AddName(name));
+            Dispatcher.BeginInvoke(() => ViewModel?.AddName(name));
         }
         catch (Exception ex)
         {
@@ -132,15 +145,21 @@ public partial class PresentationWindow : Window
     {
         try
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher.BeginInvoke(() =>
             {
                 var textBlock = new TextBlock
                 {
                     Text = item.Name,
                     FontSize = item.Size,
                     Foreground = item.ColorBrush,
-                    FontWeight = FontWeights.SemiBold,
-                    Effect = new DropShadowEffect { Color = Colors.Black, BlurRadius = 3, ShadowDepth = 1, Opacity = 0.3 }
+                    FontWeight = FontWeights.Bold,
+                    Effect = new DropShadowEffect 
+                    { 
+                        Color = item.StrokeBrush.Color, 
+                        BlurRadius = item.StrokeWidth * 3, 
+                        ShadowDepth = 0, 
+                        Opacity = 0.8 
+                    }
                 };
                 Canvas.SetLeft(textBlock, item.X);
                 Canvas.SetTop(textBlock, item.Y);
@@ -151,6 +170,26 @@ public partial class PresentationWindow : Window
         catch (Exception ex)
         {
             LoggingService.LogError("OnNameItemAdded error", ex);
+        }
+    }
+
+    private void OnNameItemRemoved(NameItem item)
+    {
+        try
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                if (_nameElements.TryGetValue(item, out var textBlock))
+                {
+                    NameCloudCanvas.Children.Remove(textBlock);
+                    _nameElements.Remove(item);
+                    textBlock = null;
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            LoggingService.LogError("OnNameItemRemoved error", ex);
         }
     }
 }

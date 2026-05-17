@@ -2,6 +2,15 @@
 
 Aplicación de escritorio Windows para evento de reunión de exempleados después de 20 años.
 
+## Documentación
+
+| Documento | Descripción |
+|-----------|-------------|
+| [USER_GUIDE.md](USER_GUIDE.md) | Guía completa de uso y configuración |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos del sistema y verificación |
+| [DESIGN.md](DESIGN.md) | Diseño técnico y arquitectura |
+| [AGENTS.md](AGENTS.md) | Guía para extensiones futuras |
+
 ## Características
 
 - **Dual-screen**: Pantalla de entrada (laptop) + Pantalla presentación (proyector)
@@ -14,17 +23,24 @@ Aplicación de escritorio Windows para evento de reunión de exempleados despué
 
 ## Requisitos
 
+Ver [REQUIREMENTS.md](REQUIREMENTS.md) para verificación automática:
 - Windows 10/11 (64-bit)
 - .NET 8 Runtime (incluido en build self-contained)
 
+### Verificación Rápida
+```powershell
+.\docs\check-requirements.ps1
+```
+
 ## Uso
 
+Ver [USER_GUIDE.md](USER_GUIDE.md) para guía completa.
+
+### Uso Rápido
 1. Conectar laptop al proyector (opcional)
 2. Ejecutar `ReunionWelcomeApp.exe`
-3. Pantalla de entrada aparece en laptop
-4. Presionar ENTER para comenzar a registrar nombres
-5. Los nombres aparecen en la pantalla de presentación
-6. Presionar ENTER again para enviar nombre
+3. Escribir nombre y presionar ENTER
+4. Los nombres aparecen en pantalla de presentación
 
 ## Hotkeys
 
@@ -53,36 +69,12 @@ Si no detecta segundo monitor:
 
 ## Configuración
 
-Editar `Resources/config.json` para personalizar:
+Ver [USER_GUIDE.md](USER_GUIDE.md#configuración---configjson) para descripción completa de todos los parámetros.
 
-```json
-{
-  "sounds": {
-    "startInteraction": "Resources/Sounds/start.wav",
-    "typingFeedback": "Resources/Sounds/typing.wav",
-    "submissionConfirm": "Resources/Sounds/confirm.wav",
-    "volume": 0.8
-  },
-  "images": {
-    "logoGreen": "Resources/Images/Impsat ThinkAhead1.jpg",
-    "logoBlue": "Resources/Images/Impsat-FondoBlanco.jpg"
-  },
-  "animations": {
-    "nameDisplayDuration": 5000,
-    "nameFadeInDuration": 500,
-    "nameFadeOutDuration": 800
-  },
-  "nameCloud": {
-    "maxNamesVisible": 50,
-    "specialHighlightEvery": 10
-  },
-  "demo": {
-    "enabled": false,
-    "mockNamesCount": 100,
-    "intervalMs": 3000
-  }
-}
-```
+Parámetros clave en `Resources/config.json`:
+- `nameCloud.exclusionRadiusPercent`: % del ancho excluido del centro (default: 25)
+- `nameCloud.nameColor`: Color de los nombres (#1A237E)
+- `nameCloud.counterColor`: Color del contador (#003399)
 
 ## Estructura del Proyecto
 

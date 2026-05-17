@@ -24,14 +24,6 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Logo -->
-            <Image x:Name="LogoImage"
-                   Source="Resources/Images/Impsat-FondoBlanco.jpg"
-                   HorizontalAlignment="Center"
-                   Width="300"
-                   Margin="0,0,0,30"
-                   Opacity="0.95"/>
-
             <!-- Main message / Input area -->
             <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock x:Name="StatusText"
@@ -106,7 +98,7 @@
             <StackPanel Grid.Row="3" Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Margin="0,30,0,0">
-                <TextBlock Text="F1: Debug  |  F2: Fullscreen  |  F3: Demo  |  F4: Mostrar/Ocultar  |  ESC: Clear/Cerrar"
+                <TextBlock Text="F1: Debug  |  F2: Fullscreen  |  F3: Demo  |  F4: Mostrar/Ocultar "
                            FontSize="12"
                            Foreground="#555555"
                            FontFamily="Consolas"/>

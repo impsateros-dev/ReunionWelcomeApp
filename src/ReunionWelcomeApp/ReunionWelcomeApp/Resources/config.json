@@ -3,7 +3,11 @@
     "startInteraction": "Resources/Sounds/start.wav",
     "typingFeedback": "Resources/Sounds/typing.wav",
     "submissionConfirm": "Resources/Sounds/confirm.wav",
-    "volume": 0.8
+    "ambientMusic": "Resources/Sounds/ambient.mp3",
+    "nameAppear": "Resources/Sounds/nameappear.mp3",
+    "nameHighlight": "Resources/Sounds/highlight.mp3",
+    "volume": 0.8,
+    "ambientVolume": 0.3
   },
   "images": {
     "background": "Resources/Images/background.jpg",
@@ -17,7 +21,14 @@
   },
   "nameCloud": {
     "maxNamesVisible": 50,
-    "specialHighlightEvery": 10
+    "specialHighlightEvery": 10,
+    "exclusionRadiusPercent": 25,
+    "nameColor": "#1A237E",
+    "nameStrokeColor": "#FFFFFF",
+    "nameStrokeWidth": 2,
+    "nameMinSize": 18,
+    "nameMaxSize": 36,
+    "counterColor": "#003399"
   },
   "demo": {
     "enabled": false,
