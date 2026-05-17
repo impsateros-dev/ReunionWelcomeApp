@@ -5,7 +5,7 @@
         WindowState="Maximized" 
         WindowStyle="None"
         SizeChanged="Window_SizeChanged"
-        Background="#0a1628">
+        Background="#EEEDF2">
     <Grid>
         <!-- Semi-transparent overlay for better name visibility -->
         <Grid.Background>
