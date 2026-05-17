@@ -1,0 +1,116 @@
+﻿<Window x:Class="ReunionWelcomeApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Reunion Welcome - Input"
+        Width="1024"
+        Height="768"
+        WindowStartupLocation="CenterScreen"
+        Background="#0a1628">
+    <Grid>
+        <!-- Animated gradient background -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#0a1628" Offset="0"/>
+                <GradientStop Color="#1a3a5c" Offset="0.5"/>
+                <GradientStop Color="#0a1628" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid Margin="50">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Logo -->
+            <Image x:Name="LogoImage"
+                   Source="Resources/Images/Impsat-FondoBlanco.jpg"
+                   HorizontalAlignment="Center"
+                   Width="300"
+                   Margin="0,0,0,30"
+                   Opacity="0.95"/>
+
+            <!-- Main message / Input area -->
+            <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock x:Name="StatusText"
+                           Text="{Binding StatusMessage}"
+                           FontSize="32"
+                           FontWeight="Light"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           FontFamily="Segoe UI"
+                           TextAlignment="Center"
+                           Margin="0,0,0,40">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="#000000" BlurRadius="10" ShadowDepth="2"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+
+                <!-- Name input (only visible when active) -->
+                <Border x:Name="InputBorder"
+                        Background="#20ffffff"
+                        CornerRadius="15"
+                        Padding="30,15"
+                        Visibility="{Binding IsInputActive, Converter={StaticResource BoolToVisibility}}"
+                        MinWidth="500">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox x:Name="NameInput"
+                                 Text="{Binding InputName, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="28"
+                                 FontFamily="Segoe UI"
+                                 Background="Transparent"
+                                 Foreground="White"
+                                 BorderThickness="0"
+                                 CaretBrush="White"
+                                 VerticalAlignment="Center"
+                                 MaxLength="100"/>
+
+                        <TextBlock Grid.Column="1"
+                                   Text="ENTER"
+                                   FontSize="14"
+                                   Foreground="#888888"
+                                   VerticalAlignment="Center"
+                                   Margin="20,0,0,0"/>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <!-- Counter display -->
+            <Border Grid.Row="2"
+                    Background="#15ffffff"
+                    CornerRadius="10"
+                    Padding="20,10"
+                    HorizontalAlignment="Center"
+                    Margin="0,20,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Registrados: "
+                               FontSize="18"
+                               Foreground="#AAAAAA"
+                               FontFamily="Segoe UI"/>
+                    <TextBlock Text="{Binding AttendeeCount}"
+                               FontSize="18"
+                               Foreground="#4CAF50"
+                               FontWeight="Bold"
+                               FontFamily="Segoe UI"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Instructions / Hotkeys -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0,30,0,0">
+                <TextBlock Text="F1: Debug  |  F2: Fullscreen  |  F3: Demo  |  F4: Mostrar/Ocultar  |  ESC: Clear/Cerrar"
+                           FontSize="12"
+                           Foreground="#555555"
+                           FontFamily="Consolas"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

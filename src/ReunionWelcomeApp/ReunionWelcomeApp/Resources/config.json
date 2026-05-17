@@ -1,0 +1,27 @@
+{
+  "sounds": {
+    "startInteraction": "Resources/Sounds/start.wav",
+    "typingFeedback": "Resources/Sounds/typing.wav",
+    "submissionConfirm": "Resources/Sounds/confirm.wav",
+    "volume": 0.8
+  },
+  "images": {
+    "background": "Resources/Images/background.jpg",
+    "logoGreen": "Resources/Images/Impsat ThinkAhead1.jpg",
+    "logoBlue": "Resources/Images/Impsat-FondoBlanco.jpg"
+  },
+  "animations": {
+    "nameDisplayDuration": 5000,
+    "nameFadeInDuration": 500,
+    "nameFadeOutDuration": 800
+  },
+  "nameCloud": {
+    "maxNamesVisible": 50,
+    "specialHighlightEvery": 10
+  },
+  "demo": {
+    "enabled": false,
+    "mockNamesCount": 100,
+    "intervalMs": 3000
+  }
+}
