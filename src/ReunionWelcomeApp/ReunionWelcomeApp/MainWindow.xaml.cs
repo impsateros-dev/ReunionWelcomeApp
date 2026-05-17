@@ -131,6 +131,40 @@ private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
             _viewModel.ToggleDemoCommand.Execute(null);
         else if (e.Key == Key.F4)
             TogglePresentationWindow();
+        else if (e.Key == Key.F5)
+            RotatePresentationScreen();
+    }
+
+    private void RotatePresentationScreen()
+    {
+        try
+        {
+            var bounds = ScreenService.RotateToNextScreen();
+            if (_presentationWindow != null)
+            {
+                _presentationWindow.Left = bounds.Left;
+                _presentationWindow.Top = bounds.Top;
+                _presentationWindow.Width = bounds.Width;
+                _presentationWindow.Height = bounds.Height;
+                _presentationWindow.WindowState = WindowState.Maximized;
+                _presentationWindow.Activate();
+                LoggingService.Log("Presentation screen rotated to next display");
+            }
+        }
+        catch (Exception ex)
+        {
+            LoggingService.LogError("RotatePresentationScreen error", ex);
+        }
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        if (_presentationWindow != null && _presentationWindow.IsVisible)
+        {
+            _presentationWindow.Close();
+            LoggingService.Log("Presentation window closed (input window closed)");
+        }
     }
 
     private void TogglePresentationWindow()

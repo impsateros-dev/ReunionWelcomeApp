@@ -52,6 +52,11 @@ Ver [USER_GUIDE.md](USER_GUIDE.md) para guía completa.
 | F2 | Toggle fullscreen (pantalla input) |
 | F3 | Toggle modo demo |
 | F4 | Mostrar/Ocultar ventana de presentación |
+| F5 | Rotar pantalla de presentación (secundaria → principal → otras) |
+
+## Auto-cierre
+
+Si se cierra la ventana de entrada (input), la ventana de presentación se cierra automáticamente si está activa.
 
 ## Modo Fallback (sin segundo monitor)
 

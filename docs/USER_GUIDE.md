@@ -60,6 +60,9 @@ ReunionWelcomeApp.exe
 | F2 | Pantalla completa (input) |
 | F3 | Activar/desactivar modo demo |
 | F4 | Mostrar/ocultar ventana de presentación |
+| F5 | Rotar pantalla de presentación (secundaria → principal → otras) |
+
+**Auto-cierre**: Si se cierra la ventana de entrada, la presentación se cierra automáticamente.
 
 ## Modo Demo
 

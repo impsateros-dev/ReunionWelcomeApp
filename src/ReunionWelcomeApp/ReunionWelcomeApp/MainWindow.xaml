@@ -98,7 +98,7 @@
             <StackPanel Grid.Row="3" Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Margin="0,30,0,0">
-                <TextBlock Text="F1: Debug  |  F2: Fullscreen  |  F3: Demo  |  F4: Mostrar/Ocultar "
+        <TextBlock Text="F1: Debug  |  F2: Fullscreen  |  F3: Demo  |  F4: Mostrar/Ocultar |  F5: Move "
                            FontSize="12"
                            Foreground="#555555"
                            FontFamily="Consolas"/>

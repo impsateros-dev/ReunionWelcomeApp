@@ -14,7 +14,7 @@ ReunionWelcomeApp/
 │   │   ├── ConfigService.cs        # Load()/Save() JSON - GetConfig()
 │   │   ├── ExcelExportService.cs   # SaveAttendees()/LoadAttendees() - CSV y XLSX
 │   │   ├── LoggingService.cs       # Log()/LogError()/LogWarning() - archivo app.log
-│   │   └── ScreenService.cs        # HasSecondaryScreen()/GetPresentationBounds()
+│   │   └── ScreenService.cs        # HasSecondaryScreen()/GetPresentationBounds()/RotateToNextScreen()
 │   ├── ViewModels/
 │   │   ├── InputViewModel.cs        # InputName, IsInputActive, EnterPressedCommand, ToggleDemo
 │   │   ├── PresentationViewModel.cs # NameCloud, AddName(), LoadExistingAttendees()
@@ -206,6 +206,7 @@ El exe standalone estará en:
 | F2 | Input | Toggle fullscreen input |
 | F3 | Input | Toggle modo demo |
 | F4 | Input | Toggle presentación |
+| F5 | Input | Rotar pantalla de presentación |
 | ESC | Fallback | (solo limpia input) |
 | F1 | Presentación | Toggle debug |
 
@@ -229,3 +230,12 @@ Editar `config.json` -> `animations`:
 Editar `config.json` -> `nameCloud`:
 - `maxNamesVisible`: límite de nombres en pantalla
 - `specialHighlightEvery`: cada cuántos nombres hace highlight dorado
+
+### Rotar pantalla de presentación
+El servicio `ScreenService.RotateToNextScreen()` cicla entre todas las pantallas disponibles.
+Al usar F5, la ventana de presentación se mueve a la siguiente pantalla en secuencia.
+El índice se resetea cuando no hay segunda pantalla detectada.
+
+### Auto-cierre de presentación
+Al cerrar la ventana de entrada (MainWindow), si la ventana de presentación está visible, se cierra automáticamente.
+Implementado en `MainWindow.OnClosed()`.
