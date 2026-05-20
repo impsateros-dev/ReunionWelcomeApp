@@ -85,27 +85,40 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OpenPresentationWindow()
+  private void OpenPresentationWindow()
+  {
+    try
     {
-        try
-        {
-            var bounds = ScreenService.GetPresentationBounds();
-            _presentationWindow = new PresentationWindow();
-            _presentationWindow.Left = bounds.Left;
-            _presentationWindow.Top = bounds.Top;
-            _presentationWindow.Width = bounds.Width;
-            _presentationWindow.Height = bounds.Height;
-            _presentationWindow.WindowState = WindowState.Maximized;
-            _presentationWindow.Show();
-            LoggingService.Log("Presentation window opened on secondary screen");
-        }
-        catch (Exception ex)
-        {
-            LoggingService.LogError("Failed to open presentation window", ex);
-        }
-    }
+      var bounds = ScreenService.GetPresentationBounds();
 
-    private void OnNameSubmitted(string name)
+      _presentationWindow = new PresentationWindow
+      {
+        WindowStartupLocation = WindowStartupLocation.Manual,
+        Left = bounds.Left,
+        Top = bounds.Top,
+        Width = bounds.Width,
+        Height = bounds.Height,
+        WindowState = WindowState.Normal // critical
+      };
+
+      _presentationWindow.Show();
+
+      // Move to correct screen BEFORE maximizing
+      _presentationWindow.Left = bounds.Left;
+      _presentationWindow.Top = bounds.Top;
+
+      // Now maximize
+      _presentationWindow.WindowState = WindowState.Maximized;
+
+      LoggingService.Log("Presentation window opened on secondary screen");
+    }
+    catch (Exception ex)
+    {
+      LoggingService.LogError("Failed to open presentation window", ex);
+    }
+  }
+
+  private void OnNameSubmitted(string name)
     {
         if (_presentationWindow != null)
             _presentationWindow.ReceiveName(name);

@@ -126,22 +126,40 @@ public partial class PresentationWindow : Window
         }
     }
 
-    private void ToggleFullscreen()
+  private void ToggleFullscreen()
+  {
+    try
     {
-        try
-        {
-            if (WindowState == WindowState.Maximized)
-                WindowState = WindowState.Normal;
-            else
-                WindowState = WindowState.Maximized;
-        }
-        catch (Exception ex)
-        {
-            LoggingService.LogError("ToggleFullscreen error", ex);
-        }
-    }
+      if (WindowStyle == WindowStyle.None)
+      {
+        // Exit fullscreen
+        WindowStyle = WindowStyle.SingleBorderWindow;
+        WindowState = WindowState.Normal;
+        Topmost = false;
+      }
+      else
+      {
+        // Enter fullscreen
+        WindowStyle = WindowStyle.None;
+        WindowState = WindowState.Normal;
+        ResizeMode = ResizeMode.NoResize;
+        Topmost = true;
 
-    private void OnNameItemAdded(NameItem item)
+        var bounds = ScreenService.GetPresentationBounds();
+
+        Left = bounds.Left;
+        Top = bounds.Top;
+        Width = bounds.Width;
+        Height = bounds.Height;
+      }
+    }
+    catch (Exception ex)
+    {
+      LoggingService.LogError("ToggleFullscreen error", ex);
+    }
+  }
+
+  private void OnNameItemAdded(NameItem item)
     {
         try
         {
