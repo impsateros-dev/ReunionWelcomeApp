@@ -17,7 +17,7 @@ ReunionWelcomeApp/
 │   │   └── ScreenService.cs        # HasSecondaryScreen()/GetPresentationBounds()/RotateToNextScreen()
 │   ├── ViewModels/
 │   │   ├── InputViewModel.cs        # InputName, IsInputActive, EnterPressedCommand, ToggleDemo
-│   │   ├── PresentationViewModel.cs # NameCloud, AddName(), LoadExistingAttendees()
+│   │   ├── PresentationViewModel.cs # NameCloud, AddName(), LoadExistingAttendees(), AddToCloud(), AddToCloudRandom(), LayoutNamesInGrid()
 │   │   └── RelayCommand.cs         # Implementación simple de ICommand
 │   ├── Resources/
 │   │   ├── config.json              # Configuración externalizada

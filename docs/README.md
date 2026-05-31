@@ -15,7 +15,7 @@ Aplicación de escritorio Windows para evento de reunión de exempleados despué
 
 - **Dual-screen**: Pantalla de entrada (laptop) + Pantalla presentación (proyector)
 - **Fallback automático**: Si no hay segundo monitor, abre segunda ventana redimensionable
-- **Nube de nombres**: Nombres animados en pantalla de presentación
+- **Nube de nombres**: Nombres ordenados alfabéticamente en formato de cuadrícula (2 o 4 columnas)
 - **Persistencia**: Excel (.xlsx) y CSV - se actualiza en cada nombre
 - **Recuperación**: Al iniciar, carga nombres existentes del CSV
 - **Modo Demo**: Simulación automática para testing

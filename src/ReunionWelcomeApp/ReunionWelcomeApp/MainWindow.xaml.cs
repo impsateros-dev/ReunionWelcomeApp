@@ -76,6 +76,13 @@ public partial class MainWindow : Window
             _presentationWindow.Height = SystemParameters.PrimaryScreenHeight - 200;
             _presentationWindow.Show();
             _presentationWindow.Activate();
+            
+            // Update the viewModel with the window dimensions
+            if (_presentationWindow.ViewModel != null)
+            {
+                _presentationWindow.ViewModel.SetWindowSize(_presentationWindow.Width, _presentationWindow.Height);
+            }
+            
             this.Activate();
             LoggingService.Log("Fallback presentation window opened on same screen (resizable)");
         }
@@ -101,16 +108,16 @@ public partial class MainWindow : Window
         WindowState = WindowState.Normal // critical
       };
 
-      _presentationWindow.Show();
+        _presentationWindow.Show();
 
-      // Move to correct screen BEFORE maximizing
-      _presentationWindow.Left = bounds.Left;
-      _presentationWindow.Top = bounds.Top;
+        // Move to correct screen BEFORE maximizing
+        _presentationWindow.Left = bounds.Left;
+        _presentationWindow.Top = bounds.Top;
 
-      // Now maximize
-      _presentationWindow.WindowState = WindowState.Maximized;
+        // Now maximize
+        _presentationWindow.WindowState = WindowState.Maximized;
 
-      LoggingService.Log("Presentation window opened on secondary screen");
+        LoggingService.Log("Presentation window opened on secondary screen");
     }
     catch (Exception ex)
     {

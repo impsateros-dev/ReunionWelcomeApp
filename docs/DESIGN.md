@@ -79,14 +79,14 @@ Aplicación WPF .NET 8 con patrón MVVM para gestión de evento dual-screen con 
   - `ToggleDemoCommand` - Toggle demo
 
 - **PresentationViewModel**: Estado presentación
-  - `CurrentName` - Nombre actual mostrado
-  - `CurrentNameOpacity` - Opacidad para animación
-  - `ShowCurrentName` - Visibilidad nombre actual
-  - `AttendeeCount` - Contador
-  - `NameCloud` - ObservableCollection de nombres
-  - `AddName()` - Añadir nombre
-  - `LoadExistingAttendees()` - Cargar previos
-  - `ToggleDebug()` - Debug overlay
+   - `CurrentName` - Nombre actual mostrado
+   - `CurrentNameOpacity` - Opacidad para animación
+   - `ShowCurrentName` - Visibilidad nombre actual
+   - `AttendeeCount` - Contador
+   - `NameCloud` - ObservableCollection de nombres
+   - `AddName()` - Añadir nombre (ordena alfabéticamente y distribuye en grid)
+   - `LoadExistingAttendees()` - Cargar previos
+   - `ToggleDebug()` - Debug overlay
 
 - **NameItem**: Item en la nube
   - `X`, `Y` - Posición
@@ -172,7 +172,7 @@ Aplicación WPF .NET 8 con patrón MVVM para gestión de evento dual-screen con 
 
 ## Notas de Implementación
 
-- Name cloud usa posición aleatoria con variaciones básicas de tamaño
+- Name cloud usa distribución alfabética en formato de cuadrícula (2 o 4 columnas)
 - Animaciones usando DispatcherTimer
 - Demo mode genera nombres mock con timer configurable
 - Fallback window: redimensionable, cerrable, movable

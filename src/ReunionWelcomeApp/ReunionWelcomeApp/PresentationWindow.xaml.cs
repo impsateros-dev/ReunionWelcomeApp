@@ -24,6 +24,9 @@ public partial class PresentationWindow : Window
         ViewModel.NameRemoved += OnNameItemRemoved;
         ViewModel.NamesRepositionRequested += OnNamesRepositionRequested;
         
+        // Subscribe to SizeChanged event to update ViewModel when window size changes
+        SizeChanged += Window_SizeChanged;
+        
         try
         {
             var config = ConfigService.GetConfig();
@@ -81,6 +84,7 @@ public partial class PresentationWindow : Window
         {
             if (ActualWidth > 0 && ActualHeight > 0)
             {
+                ViewModel?.SetWindowSize(ActualWidth, ActualHeight);
                 ViewModel?.RepositionNames(ActualWidth, ActualHeight);
                 UpdateCanvasPositions();
             }
@@ -105,12 +109,14 @@ public partial class PresentationWindow : Window
 
     private void UpdateCanvasPositions()
     {
+        LoggingService.Log($"UpdateCanvasPositions called. Count: {_nameElements.Count}");
         foreach (var kvp in _nameElements)
         {
             var item = kvp.Key;
             var textBlock = kvp.Value;
             Canvas.SetLeft(textBlock, item.X);
             Canvas.SetTop(textBlock, item.Y);
+            LoggingService.Log($"Positioned item '{item.Name}' at ({item.X}, {item.Y})");
         }
     }
 
@@ -159,12 +165,14 @@ public partial class PresentationWindow : Window
     }
   }
 
-  private void OnNameItemAdded(NameItem item)
+    private void OnNameItemAdded(NameItem item)
     {
         try
         {
             Dispatcher.BeginInvoke(() =>
             {
+                LoggingService.Log($"Creating TextBlock for name: {item.Name}, X: {item.X}, Y: {item.Y}, Size: {item.Size}");
+                
                 var textBlock = new TextBlock
                 {
                     Text = item.Name,
@@ -183,11 +191,76 @@ public partial class PresentationWindow : Window
                 Canvas.SetTop(textBlock, item.Y);
                 NameCloudCanvas.Children.Add(textBlock);
                 _nameElements[item] = textBlock;
+                
+                // Subscribe to property changes to update the UI when item properties change
+                item.PropertyChanged += OnNameItemPropertyChanged;
+                
+                LoggingService.Log($"TextBlock created and added to canvas. Actual position: ({Canvas.GetLeft(textBlock)}, {Canvas.GetTop(textBlock)})");
             });
         }
         catch (Exception ex)
         {
             LoggingService.LogError("OnNameItemAdded error", ex);
+        }
+    }
+
+    private void OnNameItemPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        try
+        {
+            if (sender is NameItem item && _nameElements.TryGetValue(item, out var textBlock))
+            {
+                Dispatcher.BeginInvoke(() =>
+                {
+                    // Update properties that have changed
+                    if (e.PropertyName == nameof(NameItem.X))
+                    {
+                        Canvas.SetLeft(textBlock, item.X);
+                    }
+                    else if (e.PropertyName == nameof(NameItem.Y))
+                    {
+                        Canvas.SetTop(textBlock, item.Y);
+                    }
+                    else if (e.PropertyName == nameof(NameItem.Size))
+                    {
+                        textBlock.FontSize = item.Size;
+                        // Update the effect to account for potential size changes in stroke
+                        var effect = textBlock.Effect as DropShadowEffect;
+                        if (effect != null)
+                        {
+                            effect.BlurRadius = item.StrokeWidth * 3;
+                        }
+                    }
+                    else if (e.PropertyName == nameof(NameItem.Name))
+                    {
+                        textBlock.Text = item.Name;
+                    }
+                    else if (e.PropertyName == nameof(NameItem.ColorBrush))
+                    {
+                        textBlock.Foreground = item.ColorBrush;
+                    }
+                    else if (e.PropertyName == nameof(NameItem.StrokeBrush))
+                    {
+                        var effect = textBlock.Effect as DropShadowEffect;
+                        if (effect != null)
+                        {
+                            effect.Color = item.StrokeBrush.Color;
+                        }
+                    }
+                    else if (e.PropertyName == nameof(NameItem.StrokeWidth))
+                    {
+                        var effect = textBlock.Effect as DropShadowEffect;
+                        if (effect != null)
+                        {
+                            effect.BlurRadius = item.StrokeWidth * 3;
+                        }
+                    }
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            LoggingService.LogError("OnNameItemPropertyChanged error", ex);
         }
     }
 
@@ -199,6 +272,9 @@ public partial class PresentationWindow : Window
             {
                 if (_nameElements.TryGetValue(item, out var textBlock))
                 {
+                    // Unsubscribe from property changed event to prevent memory leaks
+                    item.PropertyChanged -= OnNameItemPropertyChanged;
+                    
                     NameCloudCanvas.Children.Remove(textBlock);
                     _nameElements.Remove(item);
                     textBlock = null;
