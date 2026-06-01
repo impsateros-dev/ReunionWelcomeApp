@@ -400,9 +400,27 @@ public class PresentationViewModel : INotifyPropertyChanged
                     AudioService.PlayNameAppear();
                 }
 
-                 // Calculate grid position - distribute names evenly across columns
-                int columnIndex = i % columnCount;
-                int rowIndex = i / columnCount;
+                  // Calculate grid position - fill columns top to bottom, then left to right
+                // Distribute names as evenly as possible across columns
+                int baseItemsPerColumn = sortedNames.Count / columnCount;
+                int remainder = sortedNames.Count % columnCount;
+                
+                // Calculate which column and row this item belongs to
+                int columnIndex = 0;
+                int rowIndex = 0;
+                int itemIndex = 0;
+                
+                for (int col = 0; col < columnCount; col++)
+                {
+                    int colItems = baseItemsPerColumn + (col < remainder ? 1 : 0);
+                    if (i < itemIndex + colItems)
+                    {
+                        columnIndex = col;
+                        rowIndex = i - itemIndex;
+                        break;
+                    }
+                    itemIndex += colItems;
+                }
                 
                 // Calculate usable space (leave 5% margin on each side)
                 double marginFraction = 0.05; // 5% each side
@@ -428,9 +446,10 @@ public class PresentationViewModel : INotifyPropertyChanged
                 double offsetX = (_windowWidth - gridWidth) / 2;
                 double offsetY = (_windowHeight - gridHeight) / 2;
                 
-                // Position items in their grid cells (centered in each cell)
-                item.X = offsetX + (columnIndex * cellWidth) + (cellWidth / 2);
-                item.Y = offsetY + (rowIndex * cellHeight) + (fontSize * 0.25);
+                 // Position items in their grid cells (top-left corner)
+                 // TextBlock will be centered horizontally in the View
+                 item.X = offsetX + (columnIndex * cellWidth);
+                 item.Y = offsetY + (rowIndex * cellHeight);
                 item.Size = fontSize;
               
               LoggingService.Log($"Name {i}:{columnIndex}-{rowIndex} {sortedNames[i].FullName} at ({item.X}, {item.Y}), size: {item.Size}");

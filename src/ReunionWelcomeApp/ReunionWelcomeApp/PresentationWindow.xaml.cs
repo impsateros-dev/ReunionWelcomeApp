@@ -173,20 +173,22 @@ public partial class PresentationWindow : Window
             {
                 LoggingService.Log($"Creating TextBlock for name: {item.Name}, X: {item.X}, Y: {item.Y}, Size: {item.Size}");
                 
-                var textBlock = new TextBlock
-                {
-                    Text = item.Name,
-                    FontSize = item.Size,
-                    Foreground = item.ColorBrush,
-                    FontWeight = FontWeights.Bold,
-                    Effect = new DropShadowEffect 
-                    { 
-                        Color = item.StrokeBrush.Color, 
-                        BlurRadius = item.StrokeWidth * 3, 
-                        ShadowDepth = 0, 
-                        Opacity = 0.8 
-                    }
-                };
+            var textBlock = new TextBlock
+            {
+                Text = item.Name,
+                FontSize = item.Size,
+                Foreground = item.ColorBrush,
+                FontWeight = FontWeights.Bold,
+                //Width = (double)item.Tag, // Use the cellWidth stored in Tag
+                TextAlignment = TextAlignment.Center,
+                Effect = new DropShadowEffect 
+                { 
+                    Color = item.StrokeBrush.Color, 
+                    BlurRadius = item.StrokeWidth * 3, 
+                    ShadowDepth = 0, 
+                    Opacity = 0.8 
+                }
+            };
                 Canvas.SetLeft(textBlock, item.X);
                 Canvas.SetTop(textBlock, item.Y);
                 NameCloudCanvas.Children.Add(textBlock);
