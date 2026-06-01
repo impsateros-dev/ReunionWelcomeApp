@@ -33,6 +33,6 @@
   "Demo": {
     "Enabled": false,
     "MockNamesCount": 100,
-    "IntervalMs": 3000
+    "IntervalMs": 5000
   }
 }

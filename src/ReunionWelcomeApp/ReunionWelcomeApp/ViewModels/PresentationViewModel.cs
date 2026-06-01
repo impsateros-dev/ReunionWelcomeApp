@@ -373,62 +373,67 @@ public class PresentationViewModel : INotifyPropertyChanged
               return;
           }
 
-          // Calculate optimal layout
-          int columnCount = GetColumnCount(sortedNames.Count);
-          double fontSize = CalculateOptimalFontSize(sortedNames.Count, columnCount);
-          LoggingService.Log($"Layout: {columnCount} columns, font size: {fontSize}");
+           // Calculate optimal layout
+           int columnCount = GetColumnCount(sortedNames.Count);
+           double fontSize = CalculateOptimalFontSize(sortedNames, columnCount);
+           LoggingService.Log($"Layout: {columnCount} columns, font size: {fontSize}");
 
-          // Update all name items
-          for (int i = 0; i < sortedNames.Count; i++)
-          {
-              // Find existing item or create new one
-              var existingItem = NameCloud.FirstOrDefault(item => item.Name == sortedNames[i].FullName);
-              NameItem item;
+            // Update all name items
+            for (int i = 0; i < sortedNames.Count; i++)
+            {
+                // Find existing item or create new one
+                var existingItem = NameCloud.FirstOrDefault(item => item.Name == sortedNames[i].FullName);
+                NameItem item;
+                
+                if (existingItem != null)
+                {
+                    item = existingItem;
+                    // Ensure the name is set correctly (in case it was changed or was incorrect)
+                    item.Name = sortedNames[i].FullName;
+                }
+                else
+                {
+                    item = new NameItem();
+                    item.Name = sortedNames[i].FullName;
+                    NameCloud.Add(item);
+                    NameAdded?.Invoke(item);
+                    AudioService.PlayNameAppear();
+                }
+
+                 // Calculate grid position - distribute names evenly across columns
+                int columnIndex = i % columnCount;
+                int rowIndex = i / columnCount;
+                
+                // Calculate usable space (leave 5% margin on each side)
+                double marginFraction = 0.05; // 5% each side
+                double usableWidth = _windowWidth * (1.0 - 2 * marginFraction);
+                double usableHeight = _windowHeight * (1.0 - 2 * marginFraction);
+                
+                // Ensure we have usable space
+                if (usableWidth <= 0 || usableHeight <= 0)
+                {
+                    usableWidth = Math.Max(100, _windowWidth - 40); // Fallback
+                    usableHeight = Math.Max(100, _windowHeight - 60); // Fallback
+                }
+                
+                // Calculate cell dimensions
+                double cellWidth = usableWidth / columnCount;
+                double cellHeight = fontSize * 1.5; // fontSize + spacing between rows
+                
+                // Calculate total grid dimensions
+                double gridWidth = columnCount * cellWidth;
+                double gridHeight = Math.Ceiling((double)sortedNames.Count / columnCount) * cellHeight;
+                
+                // Calculate offsets to center the grid in the window
+                double offsetX = (_windowWidth - gridWidth) / 2;
+                double offsetY = (_windowHeight - gridHeight) / 2;
+                
+                // Position items in their grid cells (centered in each cell)
+                item.X = offsetX + (columnIndex * cellWidth) + (cellWidth / 2);
+                item.Y = offsetY + (rowIndex * cellHeight) + (fontSize * 0.25);
+                item.Size = fontSize;
               
-               if (existingItem != null)
-               {
-                   item = existingItem;
-                   // Ensure the name is set correctly (in case it was changed or was incorrect)
-                   item.Name = sortedNames[i].FullName;
-               }
-               else
-               {
-                   item = new NameItem();
-                   item.Name = sortedNames[i].FullName;
-                   NameCloud.Add(item);
-                   NameAdded?.Invoke(item);
-                   AudioService.PlayNameAppear();
-               }
-
-               // Calculate grid position
-               int column = i % columnCount;
-               int row = i / columnCount;
-
-               var paddingX = _windowWidth * 0.10f;
-               var paddingY = _windowHeight * 0.15f;
-               var usableWidth = _windowWidth - paddingX * 2;
-               var usableHeight = _windowHeight - paddingY * 2;
-
-               // Ensure we have usable space
-               if (usableWidth <= 0 || usableHeight <= 0)
-               {
-                   usableWidth = Math.Max(100, _windowWidth - 40); // Fallback padding
-                   usableHeight = Math.Max(100, _windowHeight - 60); // Fallback padding
-               }
-
-               double columnWidth = usableWidth / columnCount;
-               double rowHeight = fontSize * 1.5; // Add some spacing between rows
-
-               // Center items in their grid cells
-               item.X = paddingX + (column * columnWidth) + (columnWidth / 2);
-               item.Y = paddingY + (row * rowHeight) + (fontSize / 2);
-               item.Size = fontSize;
-               
-               // Ensure items stay within bounds with margin
-               item.X = Math.Max(paddingX + 10, Math.Min(item.X, _windowWidth - paddingX - 10));
-               item.Y = Math.Max(paddingY + 10, Math.Min(item.Y, _windowHeight - paddingY - 10));
-              
-              LoggingService.Log($"Name {i}: {sortedNames[i].FullName} at ({item.X}, {item.Y}), size: {item.Size}");
+              LoggingService.Log($"Name {i}:{columnIndex}-{rowIndex} {sortedNames[i].FullName} at ({item.X}, {item.Y}), size: {item.Size}");
 
               // Apply styling from config
               var color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(config.NameCloud.NameColor);
@@ -458,46 +463,72 @@ public class PresentationViewModel : INotifyPropertyChanged
          return nameCount <= 20 ? 2 : 4;
      }
 
-     private double CalculateOptimalFontSize(int nameCount, int columnCount)
-     {
-         var config = ConfigService.GetConfig();
-         double maxSize = config.NameCloud.NameMaxSize;
-         double minSize = config.NameCloud.NameMinSize;
-
-         if (nameCount == 0)
-             return maxSize;
-
-         // Calculate available space
-         var paddingX = _windowWidth * 0.10f;
-         var paddingY = _windowHeight * 0.15f;
-         var usableWidth = _windowWidth - paddingX * 2;
-         var usableHeight = _windowHeight - paddingY * 2;
-
-         // Calculate rows needed
-         int rowsPerColumn = (int)Math.Ceiling((double)nameCount / columnCount);
-         
-         // Estimate height needed based on font size
-         // Each row takes approximately fontSize * 1.5 (including spacing)
-         double heightPerRow = maxSize * 1.5;
-         double totalHeightNeeded = rowsPerColumn * heightPerRow;
-
-         // If we fit vertically, try to use larger fonts
-         if (totalHeightNeeded <= usableHeight)
+         private double CalculateOptimalFontSize(List<Attendee> sortedNames, int columnCount)
          {
-             // We can potentially increase font size, but let's stick with max for now
-             // In a more advanced version, we could calculate the exact maximum
-             return maxSize;
-         }
-         else
-         {
-             // Need to reduce font size to fit
-             double scaleFactor = usableHeight / totalHeightNeeded;
-             double newSize = maxSize * scaleFactor;
+             var config = ConfigService.GetConfig();
+             double maxSize = config.NameCloud.NameMaxSize;
+             double minSize = config.NameCloud.NameMinSize;
+
+             if (sortedNames.Count == 0)
+                 return maxSize;
+
+             // Calculate available space (using 5% margin on each side = 10% total margin)
+             double marginFraction = 0.05; // 5% each side
+             double usableWidth = _windowWidth * (1.0 - 2 * marginFraction);
+             double usableHeight = _windowHeight * (1.0 - 2 * marginFraction);
              
-             // Ensure we don't go below minimum
-             return Math.Max(minSize, newSize);
+             // Ensure we have usable space
+             if (usableWidth <= 0 || usableHeight <= 0)
+             {
+                 usableWidth = Math.Max(100, _windowWidth - 40); // Fallback
+                 usableHeight = Math.Max(100, _windowHeight - 60); // Fallback
+             }
+
+             // Calculate rows needed per column
+             int rowsPerColumn = (int)Math.Ceiling((double)sortedNames.Count / columnCount);
+             
+             // VERTICAL CONSTRAINT: Estimate height needed based on font size
+             // Each row takes approximately fontSize * 1.5 (including spacing)
+             double heightPerRow = maxSize * 1.5;
+             double totalHeightNeeded = rowsPerColumn * heightPerRow;
+             
+             double verticalFontSize = maxSize;
+             if (totalHeightNeeded > usableHeight)
+             {
+                 // Need to reduce font size to fit vertically
+                 double scaleFactor = usableHeight / totalHeightNeeded;
+                 verticalFontSize = Math.Max(minSize, maxSize * scaleFactor);
+             }
+
+             // HORIZONTAL CONSTRAINT: Check if names fit horizontally in columns
+             double columnWidth = usableWidth / columnCount;
+             
+             // Find the longest name to estimate width needed
+             double maxNameLength = 0;
+             foreach (var attendee in sortedNames)
+             {
+                 // Conservative estimate: each character takes about 0.5 * fontSize width
+                 // This is an approximation - actual width depends on font characteristics
+                 // We use maxSize as an upper bound for estimation
+                 double nameWidth = attendee.FullName.Length * 0.5 * maxSize;
+                 if (nameWidth > maxNameLength)
+                     maxNameLength = nameWidth;
+             }
+             
+             // Add significant padding for the name itself (bounding box) and safety margin
+             maxNameLength *= 1.5; // 50% extra padding
+             
+             double horizontalFontSize = maxSize;
+             if (maxNameLength > columnWidth)
+             {
+                 // Need to reduce font size to fit horizontally
+                 double scaleFactor = columnWidth / maxNameLength;
+                 horizontalFontSize = Math.Max(minSize, maxSize * scaleFactor);
+             }
+
+             // Return the smaller of the two constraints to ensure we fit in both directions
+             return Math.Min(verticalFontSize, horizontalFontSize);
          }
-     }
 
      private void TriggerHighlight()
     {

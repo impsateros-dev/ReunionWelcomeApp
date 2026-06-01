@@ -1,38 +1,38 @@
 {
-  "sounds": {
-    "startInteraction": "Resources/Sounds/start.wav",
-    "typingFeedback": "Resources/Sounds/typing.wav",
-    "submissionConfirm": "Resources/Sounds/confirm.wav",
-    "ambientMusic": "Resources/Sounds/ambient.mp3",
-    "nameAppear": "Resources/Sounds/Fanfarria.mp3",
-    "nameHighlight": "Resources/Sounds/Aplausos.mp3",
-    "volume": 0.8,
-    "ambientVolume": 0.3
+  "Sounds": {
+    "StartInteraction": "Resources/Sounds/start.wav",
+    "TypingFeedback": "Resources/Sounds/typing.wav",
+    "SubmissionConfirm": "Resources/Sounds/confirm.wav",
+    "AmbientMusic": "Resources/Sounds/ambient.mp3",
+    "NameAppear": "Resources/Sounds/Fanfarria.mp3",
+    "NameHighlight": "Resources/Sounds/Aplausos.mp3",
+    "Volume": 0.8,
+    "AmbientVolume": 0.3
   },
-  "images": {
-    "background": "Resources/Images/background.jpg",
-    "logoGreen": "Resources/Images/Impsat ThinkAhead1.jpg",
-    "logoBlue": "Resources/Images/Impsat-FondoBlanco.jpg"
+  "Images": {
+    "Background": "Resources/Images/background.jpg",
+    "LogoGreen": "Resources/Images/Impsat ThinkAhead1.jpg",
+    "LogoBlue": "Resources/Images/Impsat-FondoBlanco.jpg"
   },
-  "animations": {
-    "nameDisplayDuration": 5000,
-    "nameFadeInDuration": 500,
-    "nameFadeOutDuration": 800
+  "Animations": {
+    "NameDisplayDuration": 5000,
+    "NameFadeInDuration": 500,
+    "NameFadeOutDuration": 800
   },
-  "nameCloud": {
-    "maxNamesVisible": 50,
-    "specialHighlightEvery": 10,
-    "exclusionRadiusPercent": 25,
-    "nameColor": "#1A237E",
-    "nameStrokeColor": "#FFFFFF",
-    "nameStrokeWidth": 2,
-    "nameMinSize": 18,
-    "nameMaxSize": 36,
-    "counterColor": "#003399"
+  "NameCloud": {
+    "MaxNamesVisible": 50,
+    "SpecialHighlightEvery": 10,
+    "ExclusionRadiusPercent": 25,
+    "NameColor": "#1A237E",
+    "NameStrokeColor": "#FFFFFF",
+    "NameStrokeWidth": 2,
+    "NameMinSize": 18,
+    "NameMaxSize": 36,
+    "CounterColor": "#003399"
   },
-  "demo": {
-    "enabled": false,
-    "mockNamesCount": 100,
-    "intervalMs": 3000
+  "Demo": {
+    "Enabled": false,
+    "MockNamesCount": 100,
+    "IntervalMs": 5000
   }
 }

@@ -19,7 +19,7 @@
                VerticalAlignment="Top" 
                Margin="0,30,0,0"
                Width="500"
-               Opacity="1.0"/>
+               Opacity="0.5"/>
 
         <!-- Main content area -->
         <Grid>

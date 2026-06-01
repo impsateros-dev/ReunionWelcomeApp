@@ -10,19 +10,54 @@ namespace ReunionWelcomeApp.ViewModels;
 
 public class InputViewModel : INotifyPropertyChanged
 {
-    private string _inputName = string.Empty;
-    private bool _isInputActive;
-    private string _statusMessage = "Presione ENTER para comenzar";
-    private int _attendeeCount;
-    private bool _isDemoMode;
-    private System.Timers.Timer? _demoTimer;
-    private readonly Random _random = new();
-    private readonly string[] _mockNames = {
-        "Juan Pérez", "María García", "Carlos López", "Ana Martínez", "Pedro Rodríguez",
-        "Laura Sánchez", "Miguel González", "Sofia Hernández", "David Pérez", "Isabel Torres",
-        "Fernando Ruiz", "Carmen Díaz", "Antonio Moreno", "Elena Jiménez", "José Fernández",
-        "Lucía González", "Manuel López", "Patricia Álvarez", "Francisco García", "Angela Romero"
-    };
+  private string _inputName = string.Empty;
+  private bool _isInputActive;
+  private string _statusMessage = "Presione ENTER para comenzar";
+  private int _attendeeCount;
+  private bool _isDemoMode;
+  private System.Timers.Timer? _demoTimer;
+  private readonly Random _random = new();
+  private readonly string[] _mockNames = {"Alejandro Silva", "Sofía Mendoza", "Mateo Fernández", "Valentina Rojas", "Santiago Castillo",
+  "Camila Herrera", "Diego Morales", "Isabella Vargas", "Sebastián Castro", "Valeria Medina",
+  "Matías Ortiz", "Lucía Guzmán", "Joaquín Torres", "Martina Ruiz", "Benjamín Romero",
+  "Emilia Molina", "Lucas Díaz", "Catalina Vega", "Gabriel Fuentes", "Rafaela Soto",
+  "Martín Muñoz", "Fernanda Ramos", "Tomás Navarro", "Julieta Ibáñez", "Agustín Guerrero",
+  "Antonella Castro", "Nicolás Silva", "Elena Cruz", "Damián Pardo", "Victoria Fuentes",
+  "Bruno Mendoza", "Paulina Acuña", "Ignacio Delgado", "Renata Salinas", "Samuel Figueroa",
+  "Constanza Bustos", "Daniel Tapia", "Mia Sepúlveda", "Vicente Corvalán", "Amanda Orellana",
+  "Maximiliano Jara", "Isidora Valenzuela", "Felipe Rivas", "Maite Araya", "Juan Pablo Gallardo",
+  "Antonia Godoy", "Gonzalo Carvajal", "Florencia Palma", "Francisco Quezada", "Camila Lagos",
+  "Manuel Bravo", "Josefa Briceño", "Eduardo Espinoza", "Trinidad Alarcón", "Rodrigo Aguilera",
+  "Pía Barraza", "Cristián Bustamante", "Carla Cárdenas", "Javier Cifuentes", "Daniela Concha",
+  "Luis Contreras", "Javiera Cortés", "Antonio Dávila", "Javiera Donoso", "Carlos Echeverría",
+  "Constanza Elizondo", "Esteban Escobar", "Fernanda Espina", "Mauricio Farías", "Andrea Ferrada",
+  "Mauricio Flores", "Francisca Fuentes", "Ricardo Galdames", "Belén Gatica", "Álvaro Gómez",
+  "Paula Henríquez", "Patricio Hernández", "Josefina Hurtado", "Alberto Lagos", "Javiera Leiva",
+  "Víctor Lira", "Nicole López", "Fernando Lorca", "Belén Loyola", "Claudio Macaya",
+  "Camila Manríquez", "Carlos Martínez", "Paulina Maturana", "Carlos Medel", "Valentina Meléndez",
+  "Sergio Miranda", "Catalina Molina", "René Mondaca", "Daniela Montero", "Andrés Morales",
+  "Francisca Moraga", "Enrique Moreno", "Javiera Muñoz", "Roberto Navarro", "Sofía Navarrete",
+  "Pedro Norambuena", "Valentina Noriega", "Roberto Ogalde", "Constanza Olivares", "Claudio Orellana",
+  "Isidora Osorio", "Jorge Pacheco", "Fernanda Palma", "Rodrigo Parra", "Camila Parada",
+  "Gustavo Peñailillo", "Josefa Peralta", "Héctor Pérez", "Gabriela Pizarro", "Mauricio Plaza",
+  "Catalina Poblete", "Felipe Ponce", "Valentina Portilla", "Ernesto Prado", "Daniela Pulgar",
+  "Esteban Quezada", "Francisca Quintanilla", "Jorge Ramírez", "Fernanda Ramos", "Javier Retamal",
+  "Antonia Riquelme", "Alejandro Rivas", "Javiera Rivera", "Carlos Robles", "Paula Rodríguez",
+  "Fernando Rojas", "Martina Romero", "Cristián Rosas", "Camila Rubilar", "Eduardo Ruiz",
+  "Isidora Saavedra", "Gonzalo Salamanca", "Florencia Salas", "Diego Salinas", "Valentina San Martín",
+  "Ignacio Sánchez", "Antonia Sandoval", "Daniel Santibáñez", "Josefa Saravia", "Nicolás Sepúlveda",
+  "Javiera Silva", "Vicente Solís", "Catalina Soto", "Alberto Sotomayor", "Francisca Suárez",
+  "Matías Tapia", "Valentina Toledo", "Martín Toro", "Fernanda Torres", "Cristián Troncoso",
+  "Josefa Uribe", "Andrés Urzúa", "Isidora Valdés", "Sergio Valdivia", "Paula Valencia",
+  "Francisco Valenzuela", "Camila Vargas", "Carlos Vásquez", "Javiera Vega", "Mauricio Velásquez",
+  "Martina Venegas", "Alejandro Vera", "Valentina Vergara", "Gustavo Vidal", "Francisca Villalobos",
+  "Patricio Villarroel", "Josefa Villegas", "Héctor Viveros", "Catalina Yáñez", "Sergio Yévenes",
+  "Antonia Zamorano", "Diego Zapata", "Javiera Zúñiga", "Felipe Aburto", "Valentina Acevedo",
+  "Mauricio Acosta", "Josefa Agüero", "Carlos Alarcón", "Catalina Aldunate", "Rodrigo Alfaro",
+  "Francisca Allendes", "Sergio Almeida", "Martina Alvarado", "Jorge Álvarez", "Camila Amaro",
+  "Matías Amigo", "Valentina Ampuero", "Patricio Andrade", "Isidora Angulo", "Héctor Aravena",
+  "Javiera Arancibia", "Alejandro Araos", "Catalina Araya", "Gustavo Arce", "Francisca Arellano"
+};
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public event Action<string>? NameSubmitted;

@@ -23,6 +23,8 @@ public static class LoggingService
             {
                 var logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] {message}";
                 File.AppendAllText(LogPath, logEntry + Environment.NewLine);
+                // Also output to console for debugging
+                Console.WriteLine(logEntry);
             }
             catch { }
         }
